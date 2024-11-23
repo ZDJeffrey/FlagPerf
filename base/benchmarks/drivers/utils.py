@@ -7,7 +7,7 @@ import torch
 
 
 def set_ieee_float32(vendor):
-    if vendor == "nvidia":
+    if "nvidia" in vendor:
         torch.backends.cuda.matmul.allow_tf32 = False
     elif "cambricon" in vendor:
         torch.backends.mlu.matmul.allow_tf32 = False
@@ -17,7 +17,7 @@ def set_ieee_float32(vendor):
 
 
 def unset_ieee_float32(vendor):
-    if vendor == "nvidia":
+    if "nvidia" in vendor:
         torch.backends.cuda.matmul.allow_tf32 = True
     elif "cambricon" in vendor:
         torch.backends.mlu.matmul.allow_tf32 = True
@@ -27,7 +27,7 @@ def unset_ieee_float32(vendor):
 
 
 def host_device_sync(vendor):
-    if vendor == "nvidia":
+    if "nvidia" in vendor:
         torch.cuda.synchronize()
     else:
         print("unspecified vendor {}, using default pytorch \"torch.cuda.synchronize\"".format(vendor))
@@ -35,7 +35,7 @@ def host_device_sync(vendor):
 
 
 def multi_device_sync(vendor):
-    if vendor == "nvidia":
+    if "nvidia" in vendor:
         torch.distributed.barrier()
     else:
         print("unspecified vendor {}, using default pytorch \"torch.distributed.barrier\"".format(vendor))

@@ -65,7 +65,7 @@ def main(config, case_config, rank, world_size, local_rank):
                 raise
 
     start = time.time()
-    while time.time() <= start + 300:
+    while time.time() <= start + 30:
         foo_str = "Waiting for power monitor"
     
     if local_rank == 0:

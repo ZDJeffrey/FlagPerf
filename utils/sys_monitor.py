@@ -80,15 +80,15 @@ class Daemon:
         NOTE: override the method in subclass
         '''
 
-        def cpu_mon(file):
-            TIMESTAMP = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
-            cmd = "mpstat -P ALL 1 1|grep -v Average|grep all|awk '{print (100-$NF)/100}'"
-            res, out = rcw(cmd, 10)
-            if res:
-                result = "error"
-            result = TIMESTAMP + "\t" + out[0]
-            with open(file, 'a') as f:
-                f.write(result)
+        # def cpu_mon(file):
+        #     TIMESTAMP = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
+        #     cmd = "mpstat -P ALL 1 1|grep -v Average|grep all|awk '{print (100-$NF)/100}'"
+        #     res, out = rcw(cmd, 10)
+        #     if res:
+        #         result = "error"
+        #     result = TIMESTAMP + "\t" + out[0]
+        #     with open(file, 'a') as f:
+        #         f.write(result)
 
         def mem_mon(file):
             TIMESTAMP = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
@@ -100,41 +100,37 @@ class Daemon:
             with open(file, 'a') as f:
                 f.write(result)
 
-        def pwr_mon(file):
-            TIMESTAMP = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
-            cmd = "ipmitool sdr list|grep -i Watts|awk 'BEGIN{FS = \"|\"}{for (f=1; f <= NF; f+=1) {if ($f ~ /Watts/)" \
-                  " {print $f}}}'|awk '{print $1}'|sort -n -r|head -n1"
-            # support cambriocn mlu 
-            if "cambricon" in self.vendor:
-                cmd = "echo $(( $(ipmitool sdr list | grep -i Watts | awk 'BEGIN{FS=\"|\"} {for (f=1; f<=NF; f++) {if ($f ~ /Watts/) print $f}}' | awk '{print $1}' | sort -n -r | head -n 1) + $(cnmon info -c 0 | grep 'Machine' | awk '{print $3}') ))"
+        # def pwr_mon(file):
+        #     TIMESTAMP = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
+        #     cmd = "ipmitool sdr list|grep -i Watts|awk 'BEGIN{FS = \"|\"}{for (f=1; f <= NF; f+=1) {if ($f ~ /Watts/)" \
+        #           " {print $f}}}'|awk '{print $1}'|sort -n -r|head -n1"
+        #     # support cambriocn mlu 
+        #     if "cambricon" in self.vendor:
+        #         cmd = "echo $(( $(ipmitool sdr list | grep -i Watts | awk 'BEGIN{FS=\"|\"} {for (f=1; f<=NF; f++) {if ($f ~ /Watts/) print $f}}' | awk '{print $1}' | sort -n -r | head -n 1) + $(cnmon info -c 0 | grep 'Machine' | awk '{print $3}') ))"
             
-            res, out = rcw(cmd, 10)
-            if res:
-                result = "error"
+        #     res, out = rcw(cmd, 10)
+        #     if res:
+        #         result = "error"
 
-            if (out[0] == ""):
-                cmd = "ipmitool dcmi power reading | grep -i 'Instantaneous power reading' | awk -F': *' '{sub(/[^0-9]+/,\"\",$2); print $2}'"
-                res, out = rcw(cmd, 10)
+        #     if (out[0] == ""):
+        #         cmd = "ipmitool dcmi power reading | grep -i 'Instantaneous power reading' | awk -F': *' '{sub(/[^0-9]+/,\"\",$2); print $2}'"
+        #         res, out = rcw(cmd, 10)
 
-            result = TIMESTAMP + "\t" + out[0]
-            with open(file, 'a') as f:
-                f.write(result)
+        #     result = TIMESTAMP + "\t" + out[0]
+        #     with open(file, 'a') as f:
+        #         f.write(result)
 
-        def timer_cpu_mon():
-            cpu_process = Process(target=cpu_mon, args=(self.cpulog, ))
-            cpu_process.start()
+        # def timer_cpu_mon():
+        #     cpu_process = Process(target=cpu_mon, args=(self.cpulog, ))
+        #     cpu_process.start()
 
         def timer_mem_mon():
             mem_process = Process(target=mem_mon, args=(self.memlog, ))
             mem_process.start()
 
-        def timer_pwr_mon():
-            pwr_process = Process(target=pwr_mon, args=(self.pwrlog, ))
-            pwr_process.start()
-
-        schedule.every(self.rate1).seconds.do(timer_cpu_mon)
+        # schedule.every(self.rate1).seconds.do(timer_cpu_mon)
         schedule.every(self.rate1).seconds.do(timer_mem_mon)
-        schedule.every(self.rate2).seconds.do(timer_pwr_mon)
+        # schedule.every(self.rate2).seconds.do(timer_pwr_mon)
         schedule.run_all()
         while True:
             schedule.run_pending()
