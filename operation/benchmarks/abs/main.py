@@ -59,8 +59,11 @@ def main(config, case_config):
         "FP32": torch.float32,
         "FP16": torch.float16,
         "BF16": torch.bfloat16,
+        "FP8E4M3" : torch.float8_e4m3fn,
+        "FP8E5M2" : torch.float8_e5m2,
         "INT32": torch.int32,
         "INT16": torch.int16,
+        "INT8" : torch.int8,
         "BOOL": torch.bool
         }
     set_ieee_float32(config.vendor)

@@ -19,32 +19,14 @@ from drivers.calculate import *
 def parse_args():
     parser = ArgumentParser(description=" ")
 
-    parser.add_argument("--vendor",
-                        type=str,
-                        required=True,
-                        help="vendor name like nvidia")
-    parser.add_argument("--case_name",
-                        type=str,
-                        required=True,
-                        help="op name like mm")
-    parser.add_argument("--spectflops",
-                        type=str,
-                        required=True,
-                        help="spectflops of current dataformat")
-    parser.add_argument("--dataformat",
-                        type=str,
-                        required=True,
-                        help="like FP32,FP16")
+    parser.add_argument("--vendor", type=str, required=True, help="vendor name like nvidia")
+    parser.add_argument("--case_name", type=str, required=True, help="op name like mm")
+    parser.add_argument("--spectflops", type=str, required=True, help="spectflops of current dataformat")
+    parser.add_argument("--dataformat", type=str, required=True, help="like FP32,FP16")
 
-    parser.add_argument("--oplib",
-                        type=str,
-                        required=True,
-                        help="impl like pytorch/flaggems/cpp")
+    parser.add_argument("--oplib", type=str, required=True, help="impl like pytorch/flaggems/cpp")
 
-    parser.add_argument("--chip",
-                        type=str,
-                        required=True,
-                        help="chip like A100_40_SXM")
+    parser.add_argument("--chip", type=str, required=True, help="chip like A100_40_SXM")
 
     args, unknown_args = parser.parse_known_args()
     args.unknown_args = unknown_args
@@ -58,26 +40,26 @@ def main(config, case_config):
         "FP32": torch.float32,
         "FP16": torch.float16,
         "BF16": torch.bfloat16,
+        "FP8E4M3": torch.float8_e4m3fn,
+        "FP8E5M2": torch.float8_e5m2,
         "INT32": torch.int32,
         "INT16": torch.int16,
-        "BOOL": torch.bool
-        }
+        "INT8": torch.int8,
+        "BOOL": torch.bool,
+    }
     set_ieee_float32(config.vendor)
 
     bs = case_config.bs
     channel = case_config.channel
     hiddensize = case_config.hiddensize
-    a = torch.randn(bs, channel,  hiddensize, dtype=dtype[config.dataformat], requires_grad=True).to(0)
+    a = torch.randn(bs, channel, hiddensize, dtype=dtype[config.dataformat], requires_grad=True).to(0)
     f = torch.nn.GroupNorm(channel // 2, channel, dtype=dtype[config.dataformat]).to(0)
-    latency_nowarm, latency_warm, cputime, kerneltime = do_test(
-        f, (a, ), host_device_sync, config, case_config, bp=True)
+    latency_nowarm, latency_warm, cputime, kerneltime = do_test(f, (a,), host_device_sync, config, case_config, bp=True)
 
     op2flops = lambda x: x * bs * channel * hiddensize * 9
 
-    perf_result = cal_perf(cputime, kerneltime, op2flops,
-                           config.spectflops, bp=True)
-    print_result(config, config.case_name, *perf_result, correctness,
-                 latency_nowarm, latency_warm)
+    perf_result = cal_perf(cputime, kerneltime, op2flops, config.spectflops, bp=True)
+    print_result(config, config.case_name, *perf_result, correctness, latency_nowarm, latency_warm)
 
 
 if __name__ == "__main__":
@@ -85,14 +67,14 @@ if __name__ == "__main__":
     with open("case_config.yaml", "r") as file:
         case_config = yaml.safe_load(file)
     adapt_torch(config.vendor)
-    with open(os.path.join(config.vendor, config.chip, "case_config.yaml"),
-              "r") as file:
+    with open(os.path.join(config.vendor, config.chip, "case_config.yaml"), "r") as file:
         case_config_vendor = yaml.safe_load(file)
     case_config.update(case_config_vendor)
     case_config = Namespace(**case_config)
 
     if config.oplib == "flaggems":
         import flag_gems
+
         flag_gems.enable()
         print("Using flaggems")
     else:
