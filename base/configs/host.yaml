@@ -1,6 +1,5 @@
 FLAGPERF_PATH: "/data/home/zhengzy/FlagPerf/base"
 FLAGPERF_LOG_PATH: "result"
-VENDOR: "nvidia"
 FLAGPERF_LOG_LEVEL: "info"
 # "BENCHMARK" means benchmarks(torch), "TOOLKIT" means toolkits
 # benchmarks using container_main to launch "torchrun benchmarks/<case>/main.py", nnodes * nproc
@@ -8,23 +7,14 @@ FLAGPERF_LOG_LEVEL: "info"
 # only in benchmarks, flagperf will automatically execute benchmakrs/<case>/<vendor>/requirements.txt and env.sh
 # all resources to be used in toolkits/<case>/<vendor>/main.sh, should be under toolkits/<case>/<vendor>/
 BENCHMARKS_OR_TOOLKITS: "BENCHMARK"
-# HOSTS: ["192.168.1.2", "192.168.1.3"]
-NPROC_PER_NODE: 4
-# SSH_PORT: "22"
-# HOSTS_PORTS: ["2222"]
-# MASTER_PORT: "29501"
-# SHM_SIZE: "32G"
-ACCE_CONTAINER_OPT: " --gpus all"
-# for nvidia, using " -- gpus all"
-# for kunlunxin, using "--device=/dev/xpu0 --device=/dev/xpu1 --device=/dev/xpu2 --device=/dev/xpu3 --device=/dev/xpu4 --device=/dev/xpu5 --device=/dev/xpu6 --device=/dev/xpu7 --device=/dev/xpuctrl"
-# for iluvatar, using""
-# for xxx, using
 PIP_SOURCE: "https://mirror.baidu.com/pypi/simple"
-CLEAR_CACHES: True
 # for nvidia, using "CUDA_VISIBLE_DEVICES"
 # for xxx, using
+NPROC_PER_NODE: 4
 ACCE_VISIBLE_DEVICE_ENV_NAME: "CUDA_VISIBLE_DEVICES"
+VENDOR: "nvidia"
 CASES: 
+
      "computation-INT8:L20": "pytorch_2.3"
      "computation-FP16:L20": "pytorch_2.3"
      "computation-FP32:L20": "pytorch_2.3"
@@ -35,7 +25,33 @@ CASES:
      "interconnect-P2P_intraserver:L20": "pytorch_2.3"
      "main_memory-bandwidth:L20": "pytorch_2.3"
      "main_memory-capacity:L20": "pytorch_2.3"
-     
+
+# NVIDIA H100
+     # "computation-INT8:H100": "pytorch_2.3"
+     # "computation-FP8:H100": "pytorch_2.3"
+     # "computation-FP16:H100": "pytorch_2.3"
+     # "computation-FP32:H100": "pytorch_2.3"
+     # "computation-TF32:H100": "pytorch_2.3"
+     # "computation-FP64:H100": "pytorch_2.3"
+     # "interconnect-h2d:H100": "pytorch_2.3"
+     # "interconnect-MPI_intraserver:H100": "pytorch_2.3"
+     # "interconnect-P2P_intraserver:H100": "pytorch_2.3"
+     # "main_memory-bandwidth:H100": "pytorch_2.3"
+     # "main_memory-capacity:H100": "pytorch_2.3"
+
+# Metax C500
+     # "computation-INT8:C500": "pytorch_2.3"
+     # "computation-FP16:C500": "pytorch_2.3"
+     # "computation-FP32:C500": "pytorch_2.3"
+     # "computation-TF32:C500": "pytorch_2.3"
+     # "computation-FP64:C500": "pytorch_2.3"
+     # "interconnect-h2d:C500": "pytorch_2.3"
+     # "interconnect-MPI_intraserver:C500": "pytorch_2.3"
+     # "interconnect-P2P_intraserver:C500": "pytorch_2.3"
+     # "main_memory-bandwidth:C500": "pytorch_2.3"
+     # "main_memory-capacity:C500": "pytorch_2.3"
+
+
 # iluvatar "computation-BF16:BI150": "pytorch_2.1"
 # iluvatar "computation-FP16:BI150": "pytorch_2.1"
 # iluvatar "computation-FP32:BI150": "pytorch_2.1" 

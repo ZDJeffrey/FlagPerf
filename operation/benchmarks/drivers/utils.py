@@ -19,6 +19,8 @@ def set_ieee_float32(vendor):
     adapt_torch(vendor)
     if vendor == "nvidia":
         torch.backends.cuda.matmul.allow_tf32 = False
+    if vendor == "metax":
+        torch.backends.cuda.matmul.allow_tf32 = False
     else:
         print("unspecified vendor {}, do nothing".format(vendor))
 
@@ -26,6 +28,8 @@ def set_ieee_float32(vendor):
 def unset_ieee_float32(vendor):
     adapt_torch(vendor)
     if vendor == "nvidia":
+        torch.backends.cuda.matmul.allow_tf32 = True
+    if vendor == "metax":
         torch.backends.cuda.matmul.allow_tf32 = True
     else:
         print("unspecified vendor {}, do nothing".format(vendor))

@@ -49,7 +49,7 @@ def main(config, case_config, rank, world_size, local_rank):
     k = case_config.K
     
     
-    matrixA = torch.randn(m, n, dtype=torch.float32).to(local_rank)
+    matrixA = torch.randn(m, n, dtype=torch.float).to(local_rank)
     matrixB = torch.randn(n, k, dtype=torch.float32).to(local_rank)
     
     host_device_sync(config.vendor)
